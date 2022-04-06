@@ -2,8 +2,10 @@ from tkinter import *
 from tkinter import ttk, filedialog
 from tkinter.filedialog import askopenfile
 import os
-from MediaData import DataType
+from MediaData import DataType, MediaData
 from GenerateKeywords import GenerateKeywordsFromImage, GenerateKeywordsFromText, UploadPicture
+
+data = []
 
 def saveCommand():
     return
@@ -15,10 +17,15 @@ def openCommand():
     return
 
 def AddFileCommand():
-    file = filedialog.askopenfile(title='Choose a file', mode='r', filetypes=[('Pictures', '*.png'), ('Pictures', '*.jpeg'), ('Pictures', '*.jpg'), ('Text', '*.txt')])
+    file = filedialog.askopenfile(title='Choose a file', mode='r', filetypes=[('Pictures', '*.png'), ('Pictures', '*.jpeg'), ('Pictures', '*.jpg'), ('Pictures', '*.webp'), ('Text', '*.txt')])
     if file:
-        filepath = os.path.abspath(file.name)
-        listbox.insert(END, str(filepath))
+        filepath = str(os.path.abspath(file.name))
+        listbox.insert(END, filepath)
+        data.append(MediaData(filepath))
+
+def removeData(path: str):
+    global data
+    data = list(filter(lambda x: x.getPath() != path, data))
 
 def onSelectListbox(event):
     w = event.widget
@@ -27,12 +34,14 @@ def onSelectListbox(event):
         top = Toplevel(app)
         top.geometry("400x100")
         top.title("Remove File")
+        path = w.get(index)
         Label(top, text= "Do you want to remove the following file?").pack(side = TOP, fill = BOTH)
-        Label(top, text= w.get(index)).pack(side = TOP, fill = BOTH)
+        Label(top, text= path).pack(side = TOP, fill = BOTH)
         Button(top, text="No", command=top.destroy).pack()
         Button(top, text="Yes", command=lambda : (
             w.delete(index), 
-            top.destroy())).pack()
+            top.destroy(),
+            removeData(path))).pack()
 
 app = Tk()
 app.title("EventGroupingData")
