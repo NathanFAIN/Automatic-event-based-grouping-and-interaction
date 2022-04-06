@@ -17,7 +17,7 @@ def openCommand():
     return
 
 def AddFileCommand():
-    file = filedialog.askopenfile(title='Choose a file', mode='r', filetypes=[('Pictures', '*.png'), ('Pictures', '*.jpeg'), ('Pictures', '*.jpg'), ('Pictures', '*.webp'), ('Text', '*.txt')])
+    file = filedialog.askopenfile(title='Choose a file', mode='r', filetypes=[('Pictures', '*.png'), ('Pictures', '*.jpeg'), ('Pictures', '*.jpg'), ('Text', '*.txt')])
     if file:
         global data
         filepath = str(os.path.abspath(file.name))
