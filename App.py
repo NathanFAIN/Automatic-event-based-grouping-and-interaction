@@ -19,9 +19,13 @@ def openCommand():
 def AddFileCommand():
     file = filedialog.askopenfile(title='Choose a file', mode='r', filetypes=[('Pictures', '*.png'), ('Pictures', '*.jpeg'), ('Pictures', '*.jpg'), ('Pictures', '*.webp'), ('Text', '*.txt')])
     if file:
+        global data
         filepath = str(os.path.abspath(file.name))
         listbox.insert(END, filepath)
-        data.append(MediaData(filepath))
+        newData = MediaData(filepath)
+        print(newData.getPath())
+        print(newData.getKeyWords())
+        data.append(newData)
 
 def removeData(path: str):
     global data
