@@ -8,6 +8,11 @@ from GenerateKeywords import GenerateKeywordsFromImage, GenerateKeywordsFromText
 data = []
 
 def saveCommand():
+    key_1 = data[0].getPath()
+    key_2 = data[1].getPath()
+    for i in key_1:
+        if i in key_2:
+            print('related event')
     return
 
 def saveAsCommand():

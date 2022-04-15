@@ -19,7 +19,7 @@ class MediaData():
                 self.type = DataType.TEXT
                 f = open(path, "r")
                 contest = f.read()
-                self.keyWords = GenerateKeywordsFromText(contest)
+                self.keyWords, self.date = GenerateKeywordsFromText(contest)
             elif path.endswith('.png') or path.endswith('.jpg') or path.endswith('.jpeg') or path.endswith('.webp'):
                 self.type = DataType.PICTURE
                 link = UploadPicture(path)
