@@ -16,6 +16,30 @@ def saveAsCommand():
 def openCommand():
     return
 
+def GroupDataCommand():
+    groupedData = []
+    dataUsed = []
+    for d in data:
+        if d.getPath() not in dataUsed:
+            newGroupedData = []
+            newGroupedData.append(d)
+            dataUsed.append(d.getPath())
+            for gd in data:
+                if gd.getPath() in dataUsed:
+                    continue
+                for word1, word2 in ((w1, w2) for w1 in d.getKeyWords() for w2 in gd.getKeyWords()):
+                    if word1 == word2:
+                    #if word1 in word2 or word2 in word1:
+                        print("word : '" + word1 + "' : '" + word2 + "'")
+                        newGroupedData.append(gd)
+                        dataUsed.append(gd.getPath())
+                        break
+            groupedData.append(newGroupedData)
+    for gd in groupedData:
+        print("Grouped data : ")
+        for d in gd:
+            print(d.getPath())
+
 def AddFileCommand():
     file = filedialog.askopenfile(title='Choose a file', mode='r', filetypes=[('Pictures', '*.png'), ('Pictures', '*.jpeg'), ('Pictures', '*.jpg'), ('Text', '*.txt')])
     if file:
@@ -62,6 +86,7 @@ menu.add_cascade(label = "File",menu = m1)
 
 m2 = Menu(menu)
 m2.add_command(label = "Add File", command = AddFileCommand)
+m2.add_command(label = "Grouping data", command = GroupDataCommand)
 menu.add_cascade(label = "Edit", menu = m2)
 
 app.config(menu = menu)
