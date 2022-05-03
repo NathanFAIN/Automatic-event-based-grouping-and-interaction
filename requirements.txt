@@ -2,3 +2,5 @@ openai
 pyimgur
 tk
 python-dotenv
+tkcalendar
+ttkwidgets

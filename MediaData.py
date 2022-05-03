@@ -14,6 +14,7 @@ class MediaData():
         self.type = None
         self.keyWords = None
         self.date = None
+        self.loc = None
         if exists(path):
             if path.endswith('.txt'):
                 self.type = DataType.TEXT
@@ -38,3 +39,12 @@ class MediaData():
 
     def getDate(self):
         return self.date
+
+    def getLocation(self):
+        return self.loc
+
+    def setDate(self, date):
+        self.date = date
+
+    def setLocation(self, long, lat):
+        self.loc = [long, lat]
