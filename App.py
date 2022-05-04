@@ -8,11 +8,10 @@ from MediaEvent import MediaEvent
 from GenerateKeywords import GenerateKeywordsFromImage, GenerateKeywordsFromText, UploadPicture
 from ttkwidgets import TimeLine
 import yaml
+from PIL import Image, ImageTk
 
 data = []
-
 timeline = None
-
 path = None
 
 def is_float(element) -> bool:
@@ -22,8 +21,37 @@ def is_float(element) -> bool:
     except ValueError:
         return False
 
+def displayImg(ws, img):
+    image = Image.open(img)
+    photo = ImageTk.PhotoImage(image.resize((100, 100)))
+    label = Label(ws, image=photo)
+    label.image = photo
+    label.pack()
+
 def displayGroupedData(groupedData):
-    return
+    top = Toplevel(app)
+    top.geometry("500x500")
+    top.title("displayGroupedData")
+    canvas=Canvas(
+        top,
+        bg='#4A7A8C',
+        width=500,
+        height=400,
+        scrollregion=(0,0,0,n * 100)
+    )
+    canvas.pack(side=LEFT,expand=True)
+    for d in groupedData.getMediaDatas():
+        if d.getType() == DataType.PICTURE:
+            displayImg(tcanvasop, d.getPath())
+    sb_ver = Scrollbar(
+        top,
+        orient=VERTICAL
+    )
+
+    sb_ver.pack(side=RIGHT, fill=Y)
+
+    canvas.config(yscrollcommand=sb_ver.set)
+    sb_ver.config(command=canvas.yview)
 
 def removeDataInfo(w, index):
     top = Toplevel(app)
@@ -91,7 +119,7 @@ def saveCommand():
         saveAsCommand()
 
 def saveAsCommand():
-    file = filedialog.asksaveasfile(title='Choose a file', mode='r', filetypes=[('yaml', '*.yml')])
+    file = filedialog.asksaveasfile(title='Choose a file', mode='w', filetypes=[('yaml', '*.yml')])
     if file:
         global path
         path = str(os.path.abspath(file.name))
@@ -138,6 +166,10 @@ def GroupDataCommand():
         )
         index = 1
         for gd in groupedData:
+            ##################
+            #Debug:
+            displayGroupedData(gd)
+            ##################
             if gd.getDate() is None:
                 timeline.create_marker(str(index), 0.0, 100.0, text="Todo", move=False)
             index = index + 1
@@ -228,12 +260,13 @@ app.config(menu = menu)
 listbox = Listbox(app, selectmode='extended')
 listbox.pack(side = BOTTOM, fill = BOTH)
 scrollbar = Scrollbar(app, orient='vertical', command=listbox.yview)
+#scrollbar = Scrollbar(listbox, orient='vertical', command=listbox.yview)
 listbox['yscrollcommand'] = scrollbar.set
 scrollbar.pack(side = RIGHT, fill = BOTH)
-#listbox.config(yscrollcommand = scrollbar.set)
-#scrollbar.config(command = listbox.yview)
 listbox.bind("<Button-2>", onSelectListbox) 
-#listbox.bind('<<ListboxSelect>>', onSelectListbox)
+
+#displayImg(app, "/Users/nathanfain/Documents/CSC864_Multimedia/media/birthday.png")
+
 
 if __name__ == '__main__':
     app.mainloop()
