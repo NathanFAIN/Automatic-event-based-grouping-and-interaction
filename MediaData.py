@@ -19,8 +19,8 @@ class MediaData():
             if path.endswith('.txt'):
                 self.type = DataType.TEXT
                 f = open(path, "r")
-                contest = f.read()
-                self.keyWords = GenerateKeywordsFromText(contest)
+                content = f.read()
+                self.keyWords = GenerateKeywordsFromText(content)
                 self.keyWords = RemoveUselessKeywords(self.keyWords)
             elif path.endswith('.png') or path.endswith('.jpg') or path.endswith('.jpeg') or path.endswith('.webp'):
                 self.type = DataType.PICTURE

@@ -13,6 +13,7 @@ from PIL import Image, ImageTk
 data = []
 timeline = None
 path = None
+groupedDatas = []
 
 def is_float(element) -> bool:
     try:
@@ -28,7 +29,14 @@ def displayImg(ws, img):
     label.image = photo
     label.pack()
 
+def displayTxt(ws, txt):
+    f = open(txt, "r")
+    content = f.read()
+    label = Label(ws, text=content, width=60, height=15)
+    label.pack()
+
 def displayGroupedData(groupedData):
+    n = len(groupedData.getMediaDatas()) + 1
     top = Toplevel(app)
     top.geometry("500x500")
     top.title("displayGroupedData")
@@ -37,12 +45,14 @@ def displayGroupedData(groupedData):
         bg='#4A7A8C',
         width=500,
         height=400,
-        scrollregion=(0,0,0,n * 100)
+        scrollregion=(0,0,0, n * 100)
     )
     canvas.pack(side=LEFT,expand=True)
     for d in groupedData.getMediaDatas():
         if d.getType() == DataType.PICTURE:
-            displayImg(tcanvasop, d.getPath())
+            displayImg(canvas, d.getPath())
+        if d.getType() == DataType.TEXT:
+            displayTxt(canvas, d.getPath())
     sb_ver = Scrollbar(
         top,
         orient=VERTICAL
@@ -143,10 +153,11 @@ def openCommand():
                     listbox.insert(END, d[0])
 
 def GroupDataCommand():
-    groupedData = []
+    global groupedDatas
+    groupedDatas = []
     for d in data:
         isadded = False
-        for g in groupedData:
+        for g in groupedDatas:
             if g.isSame(d):
                 g.addMediaData(d)
                 isadded = True
@@ -154,24 +165,25 @@ def GroupDataCommand():
         if isadded == False:
             g = MediaEvent()
             g.addMediaData(d)
-            groupedData.append(g)
-    if len(groupedData) != 0:
+            groupedDatas.append(g)
+    if len(groupedDatas) != 0:
         global timeline
         if timeline != None:
             timeline.destroy()
         timeline = TimeLine(
             app,
-            categories={str(key): {"text": "Event n°{}".format(key)} for key in range(1, len(groupedData) + 1)},
+            categories={str(key): {"text": "Event n°{}".format(key)} for key in range(1, len(groupedDatas) + 1)},
             width=800, extend=True, start=0.0, finish=100.0
         )
         index = 1
-        for gd in groupedData:
+        for gd in groupedDatas:
             ##################
             #Debug:
-            displayGroupedData(gd)
+            #displayGroupedData(gd)
             ##################
-            if gd.getDate() is None:
-                timeline.create_marker(str(index), 0.0, 100.0, text="Todo", move=False)
+            #if gd.getDate() is None:
+            timeline.tag_configure(str(index), left_callback=lambda *args: displayGroupedData(groupedDatas[int(args[0])]), hover_border=2)
+            timeline.create_marker(str(index), 0.0, 100.0, text="Event", move=False, tags=(str(index),))
             index = index + 1
         timeline.draw_timeline()
         timeline.pack(side = TOP, fill = 'x')
