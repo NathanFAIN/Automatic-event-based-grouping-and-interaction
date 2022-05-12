@@ -32,7 +32,7 @@ def GenerateKeywordsFromTextBis(prompt: str):
         topics = rosette_api.topics(params)
         json_obj = json.loads(json.dumps(topics, indent=2, ensure_ascii=False, sort_keys=True))
         for n in json_obj["concepts"]:
-            keywords_array.append(n["phrase"])
+            keywords_array.append(n["phrase"].lower())
     except RosetteException as exception:
         print(exception)
         keywords_array = GenerateKeywordsFromText(prompt)

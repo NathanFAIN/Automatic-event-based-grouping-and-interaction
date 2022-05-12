@@ -10,7 +10,7 @@ class DataType(Enum):
 
 class MediaData():
     def __init__(self, path: str):
-        self.path = path
+        self.path = str(path)
         self.type = None
         self.keyWords = None
         self.date = None
