@@ -1,9 +1,12 @@
+import datetime
+
 class MediaEvent():
     def __init__(self):
         self.date = None
         self.loc = None
         self.keyWords = []
         self.mediaDatas = []
+        self.title = None
     
     def getDate(self):
         return self.date
@@ -16,6 +19,19 @@ class MediaEvent():
 
     def getMediaDatas(self):
         return self.mediaDatas
+
+    def getTitle(self):
+        return self.title
+
+    def generateMissingData(self):
+        if self.date is None:
+            self.date = datetime.datetime.now()
+        if self.title is None:
+            keyWordsList = []
+            for mediaData in self.mediaDatas:
+                for word in mediaData.getKeyWords():
+                    keyWordsList.append(word)
+            self.title = max(set(keyWordsList), key = keyWordsList.count)
 
     def isSame(self, mediaData):
         if self.date is not None and mediaData.getDate() is not None and self.date == mediaData.getDate():

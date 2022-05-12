@@ -10,8 +10,24 @@ from ttkwidgets import TimeLine
 import yaml
 from PIL import Image, ImageTk
 
+import datetime
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from datetime import date
+matplotlib.use('agg')
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import (
+    FigureCanvasTkAgg,
+    NavigationToolbar2Tk
+)
+
+import math
+import numpy as np
+
+
 data = []
-timeline = None
+figure_canvas = None
 path = None
 groupedDatas = []
 
@@ -32,7 +48,7 @@ def displayImg(ws, img):
 def displayTxt(ws, txt):
     f = open(txt, "r")
     content = f.read()
-    label = Label(ws, text=content, width=60, height=15)
+    label = Label(ws, text=content, wraplengt=400)
     label.pack()
 
 def displayGroupedData(groupedData):
@@ -78,19 +94,13 @@ def removeDataInfo(w, index):
 
 def displayDataInfo(dataToDisplay):
     def AddFileInfo():
-        global data
-        newData = MediaData(filepath)
         if cal.selection_get() is not None:
             print(cal.selection_get())
-            newData.setDate(cal.selection_get())
+            dataToDisplay.setDate(cal.selection_get())
         if is_float(long.get("1.0","end-1c")) and is_float(lat.get("1.0","end-1c")):
             print(long.get("1.0","end-1c"))
             print(lat.get("1.0","end-1c"))
-            newData.setLocation(float(long.get("1.0","end-1c")), float(lat.get("1.0","end-1c")))
-        listbox.insert(END, filepath)
-        print(newData.getPath())
-        print(newData.getKeyWords())
-        data.append(newData)
+            dataToDisplay.setLocation(float(long.get("1.0","end-1c")), float(lat.get("1.0","end-1c")))
         top.destroy()
     top = Toplevel(app)
     top.geometry("300x360")
@@ -167,26 +177,68 @@ def GroupDataCommand():
             g.addMediaData(d)
             groupedDatas.append(g)
     if len(groupedDatas) != 0:
-        global timeline
-        if timeline != None:
-            timeline.destroy()
-        timeline = TimeLine(
-            app,
-            categories={str(key): {"text": "Event n°{}".format(key)} for key in range(1, len(groupedDatas) + 1)},
-            width=800, extend=True, start=0.0, finish=100.0
-        )
-        index = 1
-        for gd in groupedDatas:
-            ##################
-            #Debug:
-            #displayGroupedData(gd)
-            ##################
-            #if gd.getDate() is None:
-            timeline.tag_configure(str(index), left_callback=lambda *args: displayGroupedData(groupedDatas[int(args[0])]), hover_border=2)
-            timeline.create_marker(str(index), 0.0, 100.0, text="Event", move=False, tags=(str(index),))
-            index = index + 1
-        timeline.draw_timeline()
-        timeline.pack(side = TOP, fill = 'x')
+        global figure_canvas
+        if figure_canvas is not None:
+            for item in figure_canvas.get_tk_widget().find_all():
+                figure_canvas.get_tk_widget().delete(item)
+        dates = []
+        labels = []
+        for g in groupedDatas:
+            g.generateMissingData()
+        for g in groupedDatas:
+            dates.append(date(g.getDate().year, g.getDate().month, g.getDate().day))
+            labels.append(g.getTitle())
+        min_date = date(np.min(dates).year - 1, np.min(dates).month, np.min(dates).day)
+        max_date = date(np.max(dates).year + 1, np.max(dates).month, np.max(dates).day)
+        labels = ['{0:%d %b %Y}:\n{1}'.format(d, l) for l, d in zip (labels, dates)]
+
+        fig, ax = plt.subplots(figsize=(15, 4), constrained_layout=True)
+        _ = ax.set_ylim(-2, 1.75)
+        _ = ax.set_xlim(min_date, max_date)
+        _ = ax.axhline(0, xmin=0.05, xmax=0.95, c='deeppink', zorder=1)
+        
+        _ = ax.scatter(dates, np.zeros(len(dates)), s=120, c='palevioletred', zorder=2)
+        _ = ax.scatter(dates, np.zeros(len(dates)), s=30, c='darkmagenta', zorder=3)
+
+
+        label_offsets = np.zeros(len(dates))
+        label_offsets[::2] = 0.35
+        label_offsets[1::2] = -0.7
+        for i, (l, d) in enumerate(zip(labels, dates)):
+            txt = ax.text(d, label_offsets[i], l, ha='center', fontfamily='serif', fontweight='bold', color='royalblue',fontsize=12)
+        stems = np.zeros(len(dates))
+        stems[::2] = 0.3
+        stems[1::2] = -0.3   
+        markerline, stemline, baseline = ax.stem(dates, stems, use_line_collection=True)
+        _ = plt.setp(markerline, marker=',', color='darkmagenta')
+        _ = plt.setp(stemline, color='darkmagenta')
+
+        # hide lines around chart
+        for spine in ["left", "top", "right", "bottom"]:
+            _ = ax.spines[spine].set_visible(False)
+        
+        # hide tick labels
+        _ = ax.set_xticks([])
+        _ = ax.set_yticks([])
+        
+        _ = ax.set_title('Timeline of events', fontweight="bold", fontfamily='serif', fontsize=16, 
+                        color='royalblue')
+
+        def onclick(event):
+            for g in groupedDatas:
+                if math.fabs(event.xdata - mdates.date2num(g.getDate())) < 3:
+                    displayGroupedData(g)
+                    return
+
+
+        cid = fig.canvas.mpl_connect('button_press_event', onclick)
+
+
+        figure_canvas = FigureCanvasTkAgg(fig, app)
+        # NavigationToolbar2Tk(figure_canvas, app)
+
+        figure_canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
+        
 
 def AddFileCommand():
     def AddFileInfo():
