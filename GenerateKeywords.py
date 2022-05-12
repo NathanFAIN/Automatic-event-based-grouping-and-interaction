@@ -4,6 +4,8 @@ import re
 import requests
 from dotenv import load_dotenv
 import pyimgur
+from rosette.api import API, DocumentParameters, RosetteException
+import json
 
 load_dotenv()
 
@@ -18,6 +20,22 @@ def GenerateKeywordsFromText(prompt: str):
     keywords_array = re.split(',|\n|-|;', keywords_text)
     keywords_array = [k.lower().strip() for k in keywords_array]
     keywords_array = [k for k in keywords_array if len(k) > 0]
+    return keywords_array
+
+def GenerateKeywordsFromTextBis(prompt: str):
+    rosette_api = API(user_key=os.getenv("ROSETTE_API_KEY"))
+    keywords_array = []
+    params = DocumentParameters()
+    params["content"] = prompt
+    topics = None
+    try:
+        topics = rosette_api.topics(params)
+        json_obj = json.loads(json.dumps(topics, indent=2, ensure_ascii=False, sort_keys=True))
+        for n in json_obj["concepts"]:
+            keywords_array.append(n["phrase"])
+    except RosetteException as exception:
+        print(exception)
+        keywords_array = GenerateKeywordsFromText(prompt)
     return keywords_array
 
 def GenerateKeywordsFromImage(link: str):

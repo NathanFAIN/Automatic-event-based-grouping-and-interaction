@@ -1,5 +1,5 @@
 from enum import Enum
-from GenerateKeywords import GenerateKeywordsFromImage, GenerateKeywordsFromText, UploadPicture, RemoveUselessKeywords
+from GenerateKeywords import GenerateKeywordsFromImage, GenerateKeywordsFromText, GenerateKeywordsFromTextBis, UploadPicture, RemoveUselessKeywords
 from os.path import exists
 
 class DataType(Enum):
@@ -20,7 +20,9 @@ class MediaData():
                 self.type = DataType.TEXT
                 f = open(path, "r")
                 content = f.read()
-                self.keyWords = GenerateKeywordsFromText(content)
+                f.close()
+                self.keyWords = GenerateKeywordsFromTextBis(content)
+                # self.keyWords = GenerateKeywordsFromText(content)
                 self.keyWords = RemoveUselessKeywords(self.keyWords)
             elif path.endswith('.png') or path.endswith('.jpg') or path.endswith('.jpeg') or path.endswith('.webp'):
                 self.type = DataType.PICTURE

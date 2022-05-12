@@ -5,7 +5,7 @@ from tkcalendar import Calendar
 import os
 from MediaData import DataType, MediaData
 from MediaEvent import MediaEvent
-from GenerateKeywords import GenerateKeywordsFromImage, GenerateKeywordsFromText, UploadPicture
+from GenerateKeywords import GenerateKeywordsFromImage, GenerateKeywordsFromText, GenerateKeywordsFromTextBis, UploadPicture
 from ttkwidgets import TimeLine
 import yaml
 from PIL import Image, ImageTk
@@ -144,6 +144,7 @@ def saveAsCommand():
         global path
         path = str(os.path.abspath(file.name))
         saveCommand()
+        file.close()
 
 def openCommand():
     file = filedialog.askopenfile(title='Choose a file', mode='r', filetypes=[('yaml', '*.yml')])
@@ -161,6 +162,7 @@ def openCommand():
                     newData.setDate(d[2])
                     data.append(newData)
                     listbox.insert(END, d[0])
+        file.close()
 
 def GroupDataCommand():
     global groupedDatas
@@ -273,6 +275,7 @@ def AddFileCommand():
         lat = Text(top, height = 1, width = 5)
         lat.pack()
         Button(top, text = "Done", command=AddFileInfo).pack()
+        file.close()
 
 
 def removeData(path: str):
