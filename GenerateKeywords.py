@@ -39,11 +39,13 @@ def GenerateKeywordsFromTextBis(prompt: str):
     return keywords_array
 
 def GenerateKeywordsFromImage(link: str):
+    keywords_array = []
     headers = {"Content-type": "application/x-www-form-urlencoded" , 'api-key':os.getenv("KEYWORDSREADY_API_KEY")}
     response = requests.post('https://keywordsready.com/api/analyzes', {'url':link,  }, headers=headers).json()
     if response["success"] == True:
-        return response["keywords"]
-    return []
+        for n in response["keywords"]:
+            keywords_array.append(n.lower())
+    return keywords_array
 
 def UploadPicture(path: str):
     im = pyimgur.Imgur(os.getenv("IMGUR_API_KEY"))
