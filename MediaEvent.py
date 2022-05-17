@@ -1,4 +1,5 @@
 import datetime
+import math
 
 class MediaEvent():
     def __init__(self):
@@ -33,8 +34,36 @@ class MediaEvent():
                     keyWordsList.append(word)
             self.title = max(set(keyWordsList), key = keyWordsList.count)
 
+    def isInRadius(self, m1, m2):
+        # approximate radius of earth in km
+        R = 6373.0
+
+        print(m1)
+        print(m2)
+        lat1 = math.radians(m1[0])
+        lon1 = math.radians(m1[1])
+        lat2 = math.radians(m2[0])
+        lon2 = math.radians(m2[1])
+
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
+
+        a = math.sin(dlat / 2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2)**2
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+        distance = R * c
+
+        print("Result:", distance)
+
+        return distance < 20
+
     def isSame(self, mediaData):
+        print(mediaData.getLocation())
+        print(self.loc)
+        print("----------")
         if self.date is not None and mediaData.getDate() is not None and self.date == mediaData.getDate():
+            return True
+        if self.loc is not None and mediaData.getLocation() is not None and self.isInRadius(self.loc, mediaData.getLocation()):
             return True
         if self.loc is not None and mediaData.getLocation() is not None and self.loc == mediaData.getLocation():
             return True
