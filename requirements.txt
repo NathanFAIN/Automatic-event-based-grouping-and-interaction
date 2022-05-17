@@ -2,3 +2,10 @@ openai
 pyimgur
 tk
 python-dotenv
+tkcalendar
+ttkwidgets
+pillow
+rosette_api
+matplotlib
+dotenv
+python-dotenv
