@@ -31,6 +31,7 @@ figure_canvas = None
 path = None
 groupedDatas = []
 
+#Check that the value is a float
 def is_float(element) -> bool:
     try:
         float(element)
@@ -38,6 +39,7 @@ def is_float(element) -> bool:
     except ValueError:
         return False
 
+#Function to display a img in a window
 def displayImg(ws, img):
     image = Image.open(img)
     photo = ImageTk.PhotoImage(image.resize((100, 100)))
@@ -45,12 +47,14 @@ def displayImg(ws, img):
     label.image = photo
     label.pack()
 
+#Function to display a text in a window
 def displayTxt(ws, txt):
     f = open(txt, "r")
     content = f.read()
     label = Label(ws, text=content, wraplengt=400)
     label.pack()
 
+#Function to display all data (img, txt) related to an event
 def displayGroupedData(groupedData):
     n = len(groupedData.getMediaDatas()) + 1
     top = Toplevel(app)
@@ -79,6 +83,7 @@ def displayGroupedData(groupedData):
     canvas.config(yscrollcommand=sb_ver.set)
     sb_ver.config(command=canvas.yview)
 
+#remove file from the app
 def removeDataInfo(w, index):
     top = Toplevel(app)
     top.geometry("400x100")
@@ -92,6 +97,7 @@ def removeDataInfo(w, index):
         top.destroy(),
         removeData(path))).pack()
 
+#display the information of a data
 def displayDataInfo(dataToDisplay):
     def AddFileInfo():
         if cal.selection_get() is not None:
@@ -126,6 +132,7 @@ def displayDataInfo(dataToDisplay):
     lat.pack()
     Button(top, text = "Done", command=AddFileInfo).pack()
 
+#Save a profile (toolbar)
 def saveCommand():
     global path
     if path is not None:
@@ -138,6 +145,7 @@ def saveCommand():
     else:
         saveAsCommand()
 
+#Save a profile (toolbar)
 def saveAsCommand():
     file = filedialog.asksaveasfile(title='Choose a file', mode='w', filetypes=[('yaml', '*.yml')])
     if file:
@@ -146,6 +154,7 @@ def saveAsCommand():
         saveCommand()
         file.close()
 
+#Load a profile (toolbar)
 def openCommand():
     file = filedialog.askopenfile(title='Choose a file', mode='r', filetypes=[('yaml', '*.yml')])
     if file:
@@ -164,6 +173,7 @@ def openCommand():
                     listbox.insert(END, d[0])
         file.close()
 
+#Group the data by event and display the timeline (toolbar)
 def GroupDataCommand():
     global groupedDatas
     groupedDatas = []
@@ -194,6 +204,7 @@ def GroupDataCommand():
         max_date = date(np.max(dates).year + 1, np.max(dates).month, np.max(dates).day)
         labels = ['{0:%d %b %Y}:\n{1}'.format(d, l) for l, d in zip (labels, dates)]
 
+        #use and encapsulation of matplotlib
         fig, ax = plt.subplots(figsize=(15, 4), constrained_layout=True)
         _ = ax.set_ylim(-2, 1.75)
         _ = ax.set_xlim(min_date, max_date)
@@ -237,11 +248,11 @@ def GroupDataCommand():
 
 
         figure_canvas = FigureCanvasTkAgg(fig, app)
-        # NavigationToolbar2Tk(figure_canvas, app)
 
         figure_canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
         
 
+#Importing new data into the application (toolbar)
 def AddFileCommand():
     def AddFileInfo():
         global data
@@ -289,6 +300,7 @@ def getData(path: str):
             return d
     return None
 
+#Listener, is triggered when you click on a media
 def onSelectListbox(event):
     w = event.widget
     if len(w.curselection()) != 0:
@@ -308,6 +320,7 @@ app = Tk()
 app.title("EventGroupingData")
 app.geometry("1280x720")
 
+#Creation of the toolbar
 menu = Menu(app)
 
 m1 = Menu(menu, tearoff = 0)
@@ -327,13 +340,12 @@ app.config(menu = menu)
 listbox = Listbox(app, selectmode='extended')
 listbox.pack(side = BOTTOM, fill = BOTH)
 scrollbar = Scrollbar(app, orient='vertical', command=listbox.yview)
-#scrollbar = Scrollbar(listbox, orient='vertical', command=listbox.yview)
 listbox['yscrollcommand'] = scrollbar.set
 scrollbar.pack(side = RIGHT, fill = BOTH)
 listbox.bind("<Button-2>", onSelectListbox) 
 
-#displayImg(app, "/Users/nathanfain/Documents/CSC864_Multimedia/media/birthday.png")
 
 
 if __name__ == '__main__':
+    #Display the application
     app.mainloop()

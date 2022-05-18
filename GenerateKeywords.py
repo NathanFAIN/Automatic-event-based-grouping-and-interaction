@@ -9,6 +9,7 @@ import json
 
 load_dotenv()
 
+#API call to generate keywords in a text
 def GenerateKeywordsFromText(prompt: str):
     openai.api_key = os.getenv("OPENAI_API_KEY")
     enriched_prompt = f'Generate related branding keywords for {prompt}: '
@@ -22,6 +23,7 @@ def GenerateKeywordsFromText(prompt: str):
     keywords_array = [k for k in keywords_array if len(k) > 0]
     return keywords_array
 
+#API call to generate keywords in a picture
 def GenerateKeywordsFromTextBis(prompt: str):
     rosette_api = API(user_key=os.getenv("ROSETTE_API_KEY"))
     keywords_array = []
@@ -38,6 +40,7 @@ def GenerateKeywordsFromTextBis(prompt: str):
         keywords_array = GenerateKeywordsFromText(prompt)
     return keywords_array
 
+#API call to generate keywords in a picture
 def GenerateKeywordsFromImage(link: str):
     keywords_array = []
     headers = {"Content-type": "application/x-www-form-urlencoded" , 'api-key':os.getenv("KEYWORDSREADY_API_KEY")}
@@ -47,11 +50,13 @@ def GenerateKeywordsFromImage(link: str):
             keywords_array.append(n.lower())
     return keywords_array
 
+#upload an picture on imgur
 def UploadPicture(path: str):
     im = pyimgur.Imgur(os.getenv("IMGUR_API_KEY"))
     uploadedImage = im.upload_image(path)
     return uploadedImage.link
 
+#removal of unnecessary keywords 
 def RemoveUselessKeywords(keywords):
     #bannedkeywords = ["horizon", "people", "color", "image", "emotion"]
     newkeywords = []

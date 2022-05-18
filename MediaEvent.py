@@ -1,6 +1,7 @@
 import datetime
 import math
 
+#This class represents an event and contains 1 or more MediaData objects 
 class MediaEvent():
     def __init__(self):
         self.date = None
@@ -34,6 +35,7 @@ class MediaEvent():
                     keyWordsList.append(word)
             self.title = max(set(keyWordsList), key = keyWordsList.count)
 
+    #calculation of the distance between two long and lat
     def isInRadius(self, m1, m2):
         # approximate radius of earth in km
         R = 6373.0
@@ -57,6 +59,7 @@ class MediaEvent():
 
         return distance < 20
 
+    #compare a MediaData object with the event
     def isSame(self, mediaData):
         print(mediaData.getLocation())
         print(self.loc)
@@ -72,6 +75,7 @@ class MediaEvent():
                 return True
         return False
 
+    #add a MediaData object in the event
     def addMediaData(self, mediaData):
         if self.date is None and mediaData.getDate() is not None:
             self.date = mediaData.getDate()
