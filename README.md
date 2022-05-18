@@ -21,7 +21,7 @@ To start the application:
 python3 App.py
 ```
 
-The different actions that can be done :
+The different actions that can be done:
 - Use the file `data-set/test.yml` to load a profile with multiple media by clicking on `File -> Open`.
 - Save the profile by clicking on `File -> Save` or `File -> Save As`.
 - Add new files (media) by clicking on `Edit -> Add File`.
