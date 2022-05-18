@@ -26,3 +26,5 @@ The different actions that can be done:
 - Save the profile by clicking on `File -> Save` or `File -> Save As`.
 - Add new files (media) by clicking on `Edit -> Add File`.
 - Group the media into events by clicking on `Edit -> Groupping data`.
+
+All test data are located in the `data-set` folder.
